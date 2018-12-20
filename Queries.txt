@@ -1,0 +1,48 @@
+
+/*Query 1: Top 20 spending customers*/
+SELECT c.CustomerID, c.FirstName, c.LastName, SUM(iv.Total) as Amt_Spent
+FROM Customer c
+JOIN Invoice iv
+ON c.CustomerId = iv.CustomerId
+GROUP BY 1
+ORDER BY 4 DESC
+LIMIT 20;
+
+
+/* Query 2: Top 10 Genres by Sales */
+SELECT g.GenreId, g.Name, SUM(ivl.UnitPrice*ivl.Quantity) as Total_sales
+FROM Genre g
+JOIN Track t
+ON t.GenreId = g.GenreId
+JOIN InvoiceLine ivl
+ON t.TrackId = ivl.TrackId
+GROUP BY 1
+ORDER BY 3 DESC
+LIMIT 10;
+
+/*Query 3: Top 10 Artists sorted by Sales along with No of Songs*/
+SELECT ar.Name, COUNT(ivl.TrackId) as NO_of_Tracks, SUM(ivl.UnitPrice*ivl.Quantity) as Sales
+FROM Artist ar
+JOIN Album al
+ON ar.ArtistId = al.ArtistId
+JOIN Track t
+ON al.AlbumId = t.AlbumId
+JOIN InvoiceLine ivl
+ON t.TrackId = ivl.TrackId
+GROUP BY 1
+ORDER BY 3 DESC
+LIMIT 10;
+
+
+/*Query 4: Sales year wise for top 5 genres*/
+SELECT STRFTIME('%Y', iv.InvoiceDate) as Year, g.Name, SUM(ivl.UnitPrice*ivl.Quantity) as Sales
+FROM Invoice iv
+JOIN InvoiceLine ivl
+ON iv.InvoiceId = ivl.InvoiceId
+JOIN Track t
+ON t.TrackId = ivl.TrackId
+JOIN Genre g
+ON t.GenreId = g.GenreId
+WHERE g.Name in ('Rock','Latin', 'Jazz', 'Alternative & Punk', 'Metal')
+GROUP BY 1,2
+ORDER BY 1 DESC,3 DESC;
